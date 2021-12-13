@@ -13,7 +13,10 @@ pheatmap(log2(1 + cancer1[1:500,2:501]), cluster_rows = F, cluster_cols = F ,lab
 pheatmap(log2(1 + cancer2[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
 pheatmap(log2(1 + normal[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
 
+x <- which(cancer1$V1 == "chr12:127000000:127010000")
+y <- which(cancer1$V1 == "chr12:130990000:131000000")
 
-cancer1.sub <- cancer1[]
-specific.norm <- diag(1/rowSums(cancer1["chr12:127000:128000":"chr12:130000:131000",2:501]))
+cancer1.sub <- cancer1[x:y,(x+1):(y+1)]
+
+specific.norm <- diag(1/rowSums(cancer1.sub))
 matr <- (specific.norm %*% as.numeric(cancer1[1:500,2:501]) %*% specific.norm)
