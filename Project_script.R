@@ -1,22 +1,69 @@
+#Set the environment.
 library("ggplot2")
 library("data.table")
 library("pheatmap")
-setwd("C:/Users/Daniel/OneDrive/Bureau/EPFL/Génétique & Génomique/Genetics_project_2")
+###setwd("C:/Users/Daniel/OneDrive/Bureau/EPFL/Génétique & Génomique/Genetics_project_2")
+#Load the data.
+#10kb resolution.
+cancer1.10kb = fread("C42B_chr12_10kb_hic_matrix.txt")
+cancer2.10kb = fread("22Rv1_chr12_10kb_hic_matrix.txt")
+normal.10kb  = fread("RWPE1_chr12_10kb_hic_matrix.txt")
+#40kb resolution.
+cancer1.40kb = fread("C42B_chr12_40kb_hic_matrix.txt")
+cancer2.40kb = fread("22Rv1_chr12_40kb_hic_matrix.txt")
+normal.40kb  = fread("RWPE1_chr12_40kb_hic_matrix.txt")
 
-cancer1 = fread("C42B_chr12_10kb_hic_matrix.txt")
-cancer2 = fread("22Rv1_chr12_10kb_hic_matrix.txt")
-normal = fread("RWPE1_chr12_10kb_hic_matrix.txt")
+#Pheatmaps.
+maximum <- ceiling(max(log2(1 + cancer1.10kb[1:500,2:501]),log2(1 + cancer2.10kb[1:500,2:501]),log2(1 + normal.10kb[1:500,2:501])))
+pheatmap(log2(1 + cancer1.10kb[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
+pheatmap(log2(1 + cancer2.10kb[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
+pheatmap(log2(1 + normal.10kb[1:500,2:501]) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
 
-maximum <- max(log2(1 + cancer1[1:500,2:501]),log2(1 + cancer2[1:500,2:501]),log2(1 + normal[1:500,2:501]))
+#Subset for the regions 127Mb-131Mb.
+x <- which(cancer1.10kb$V1 == "chr12:127000000:127010000")
+y <- which(cancer1.10kb$V1 == "chr12:130990000:131000000")
+cancer1.sub <- cancer1.10kb[x:y,(x+1):(y+1)]
+rm(cancer1.10kb)
 
-pheatmap(log2(1 + cancer1[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
-pheatmap(log2(1 + cancer2[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
-pheatmap(log2(1 + normal[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum))
+x <- which(cancer2.10kb$V1 == "chr12:127000000:127010000")
+y <- which(cancer2.10kb$V1 == "chr12:130990000:131000000")
+cancer2.sub <- cancer2.10kb[x:y,(x+1):(y+1)]
+rm(cancer2.10kb)
 
-x <- which(cancer1$V1 == "chr12:127000000:127010000")
-y <- which(cancer1$V1 == "chr12:130990000:131000000")
+x <- which(normal.10kb$V1 == "chr12:127000000:127010000")
+y <- which(normal.10kb$V1 == "chr12:130990000:131000000")
+normal.sub <- normal.10kb[x:y,(x+1):(y+1)]
+rm(normal.10kb)
 
-cancer1.sub <- cancer1[x:y,(x+1):(y+1)]
+#Implement the Vanilla Coverage normalization.
+vanilla_coverage <- function(x){
+  sum.the.rows <- rowSums(x)
+  by.zero <- which(sum.the.rows == 0)
+  if(length(by.zero) != 0){
+    for(i in by.zero){
+      specific.norm <- diag(1/sum.the.rows)
+      specific.norm[i,i] = 0
+    }
+  }else{specific.norm <- diag(1/sum.the.rows)}
+  norm.matrix <- (specific.norm %*% as.matrix(x) %*% specific.norm)
+  total.sum <- sum(sum(rowSums(x)))
+  norm.total.sum <- sum(sum(rowSums(norm.matrix)))
+  return(norm.matrix*(total.sum/norm.total.sum))
+}
 
-specific.norm <- diag(1/rowSums(cancer1.sub))
-matr <- (specific.norm %*% as.numeric(cancer1[1:500,2:501]) %*% specific.norm)
+#Normalization
+cancer1.10kb.norm <- vanilla_coverage(cancer1.sub)
+cancer2.10kb.norm <- vanilla_coverage(cancer2.sub)
+normal.10kb.norm  <- vanilla_coverage(normal.sub)
+cancer1.40kb.norm <- vanilla_coverage(cancer1.40kb[,2:ncol(cancer1.40kb)])
+rm(cancer1.40kb)
+cancer2.40kb.norm <- vanilla_coverage(cancer2.40kb[,2:ncol(cancer2.40kb)])
+rm(cancer2.40kb)
+normal.40kb.norm  <- vanilla_coverage(normal.40kb[,2:ncol(normal.40kb)])
+
+#Pheatmaps for RWPE1 cell type at 40kb resolution.
+maximum2 <- ceiling(max(log2(1 + normal.40kb[1:500,2:501]),log2(1 + normal.40kb.norm[1:500,1:500])))
+pheatmap(log2(1 + normal.40kb[1:500,2:501]) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum2), color = colorRampPalette(c("white", "orange", "red"))(maximum2))
+pheatmap(log2(1 + normal.40kb.norm[1:500,1:500]) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum2), color = colorRampPalette(c("white", "orange", "red"))(maximum2))
+rm(normal.40kb)
+#Bonus.
