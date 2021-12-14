@@ -2,7 +2,9 @@
 library("ggplot2")
 library("data.table")
 library("pheatmap")
-###setwd("C:/Users/Daniel/OneDrive/Bureau/EPFL/Génétique & Génomique/Genetics_project_2")
+library("viridisLite")
+library("viridis")
+setwd("C:/Users/Daniel/OneDrive/Bureau/EPFL/Génétique & Génomique/Genetics_project_2")
 #Load the data.
 #10kb resolution.
 cancer1.10kb = fread("C42B_chr12_10kb_hic_matrix.txt")
@@ -67,3 +69,18 @@ pheatmap(log2(1 + normal.40kb[1:500,2:501]) , cluster_rows = F, cluster_cols = F
 pheatmap(log2(1 + normal.40kb.norm[1:500,1:500]) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum2), color = colorRampPalette(c("white", "orange", "red"))(maximum2))
 rm(normal.40kb)
 #Bonus.
+
+#5. Data visualization and exploration.
+maximum3 <- ceiling(max(log2(1+cancer1.10kb.norm),log2(1+cancer2.10kb.norm),log2(1+normal.10kb.norm)))
+pheatmap(log2(1 + cancer1.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white", "orange", "red"))(maximum3))
+pheatmap(log2(1 + cancer2.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white", "orange", "red"))(maximum3))
+pheatmap(log2(1 + normal.10kb.norm) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white" ,"orange", "red"))(maximum3))
+
+#Subtract pair of matrices.
+normal.cancer1 <- abs(normal.10kb.norm - cancer1.10kb.norm)
+normal.cancer2 <- abs(normal.10kb.norm - cancer2.10kb.norm)
+cancer1.cancer2<- abs(cancer1.10kb.norm- cancer2.10kb.norm)
+maximum4 <- ceiling(max(log2(1+normal.cancer1),log2(1+normal.cancer2),log2(1+cancer1.cancer2)))
+pheatmap(log2(1 + normal.cancer1) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum4), color = colorRampPalette(magma(256))(maximum4))
+pheatmap(log2(1 + normal.cancer2) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum4), color = colorRampPalette(magma(256))(maximum4))
+pheatmap(log2(1 + cancer1.cancer2), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum4), color = colorRampPalette(magma(256))(maximum4))
