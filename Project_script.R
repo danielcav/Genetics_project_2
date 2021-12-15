@@ -48,8 +48,8 @@ vanilla_coverage <- function(x){
     }
   }else{specific.norm <- diag(1/sum.the.rows)}
   norm.matrix <- (specific.norm %*% as.matrix(x) %*% specific.norm)
-  total.sum <- sum(sum(rowSums(x)))
-  norm.total.sum <- sum(sum(rowSums(norm.matrix)))
+  total.sum <- sum(rowSums(x))
+  norm.total.sum <- sum(rowSums(norm.matrix))
   return(norm.matrix*(total.sum/norm.total.sum))
 }
 
@@ -76,11 +76,20 @@ pheatmap(log2(1 + cancer1.10kb.norm), cluster_rows = F, cluster_cols = F ,labels
 pheatmap(log2(1 + cancer2.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white", "orange", "red"))(maximum3))
 pheatmap(log2(1 + normal.10kb.norm) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white" ,"orange", "red"))(maximum3))
 
-#Subtract pair of matrices.
-normal.cancer1 <- abs(normal.10kb.norm - cancer1.10kb.norm)
-normal.cancer2 <- abs(normal.10kb.norm - cancer2.10kb.norm)
-cancer1.cancer2<- abs(cancer1.10kb.norm- cancer2.10kb.norm)
-maximum4 <- ceiling(max(log2(1+normal.cancer1),log2(1+normal.cancer2),log2(1+cancer1.cancer2)))
-pheatmap(log2(1 + normal.cancer1) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum4), color = colorRampPalette(magma(256))(maximum4))
-pheatmap(log2(1 + normal.cancer2) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum4), color = colorRampPalette(magma(256))(maximum4))
-pheatmap(log2(1 + cancer1.cancer2), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum4), color = colorRampPalette(magma(256))(maximum4))
+#5.3. Subtract pair of matrices.
+normal.cancer1 <- normal.10kb.norm - cancer1.10kb.norm
+normal.cancer2 <- normal.10kb.norm - cancer2.10kb.norm
+cancer1.cancer2<- cancer1.10kb.norm- cancer2.10kb.norm
+maximum4 <- ceiling(max(1+normal.cancer1,1+normal.cancer2,1+cancer1.cancer2))
+minimum  <- floor(min(1+normal.cancer1,1+normal.cancer2,1+cancer1.cancer2))
+pheatmap(normal.cancer1 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
+pheatmap(normal.cancer2 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
+pheatmap(cancer1.cancer2, cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
+
+#6. Calling of Topologically Associated Domains (TADs)
+directionality_index <- function(x){
+  
+  e <- (a+b)/2
+  DI <- (((a+b)/abs(a-b))*(((a-e)^2)/e + ((b-e)^2)/e))
+  return(DI)
+}
