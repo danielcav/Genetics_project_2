@@ -120,4 +120,4 @@ cancer1.di<- directionality_index(cancer1.40kb.norm)
 cancer2.di<- directionality_index(cancer2.40kb.norm)
 normal.di <- directionality_index(normal.40kb.norm)
 
-ggplot() + geom_rect(data = as.data.frame(cancer1.di), )
+ggplot() + geom_rect(data = as.data.frame(cancer1.di), xmin = 1, xmax = 3269, ymin = min(cancer1.di), ymax = max(cancer1.di))
