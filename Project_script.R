@@ -87,9 +87,37 @@ pheatmap(normal.cancer2 , cluster_rows = F, cluster_cols = F ,labels_row = '', l
 pheatmap(cancer1.cancer2, cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
 
 #6. Calling of Topologically Associated Domains (TADs)
-directionality_index <- function(x){
-  
-  e <- (a+b)/2
-  DI <- (((a+b)/abs(a-b))*(((a-e)^2)/e + ((b-e)^2)/e))
-  return(DI)
+directionality_index <- function(x, w = 2e6, r = 4e4){
+  bins.number <- w/r
+  A <- c()
+  for(i in 1:ncol(x)){
+    a.range <- i-bins.number
+    b.range <- i+bins.number
+    if(a.range <= 0){a.range <- 1}
+    if(b.range > ncol(x)){b.range <- ncol(x)}
+    if(i == 1){
+      a <- 0
+      b <- sum(x[i,(i+1):b.range])
+      e <- (a+b)/2
+      DI <-(((b-a)/abs(a-b))*((((a-e)^2)/e) + (((b-e)^2)/e)))
+    }else if(i == ncol(x)){
+      a <- sum(x[a.range:(i-1),i])
+      b <- 0
+      e <- (a+b)/2
+      DI <-(((b-a)/abs(a-b))*((((a-e)^2)/e) + (((b-e)^2)/e)))
+    }else{
+      a <- sum(x[a.range:(i-1),i])
+      b <- sum(x[i,(i+1):b.range])
+      e <- (a+b)/2
+      DI <-(((b-a)/abs(a-b))*((((a-e)^2)/e) + (((b-e)^2)/e)))
+    }
+    A[i] <- DI
+  }
+  return(A)
 }
+
+cancer1.di<- directionality_index(cancer1.40kb.norm)
+cancer2.di<- directionality_index(cancer2.40kb.norm)
+normal.di <- directionality_index(normal.40kb.norm)
+
+ggplot() + geom_rect(data = as.data.frame(cancer1.di), )
