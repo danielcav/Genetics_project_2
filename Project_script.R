@@ -14,6 +14,12 @@ normal.10kb  = fread("RWPE1_chr12_10kb_hic_matrix.txt")
 cancer1.40kb = fread("C42B_chr12_40kb_hic_matrix.txt")
 cancer2.40kb = fread("22Rv1_chr12_40kb_hic_matrix.txt")
 normal.40kb  = fread("RWPE1_chr12_40kb_hic_matrix.txt")
+cancer1.40kb.names <- names(cancer1.40kb)
+cancer2.40kb.names <- names(cancer2.40kb)
+normal.40kb.names <- names(normal.40kb)
+cancer1.40kb.names <- cancer1.40kb.names[-1]
+cancer2.40kb.names <- cancer2.40kb.names[-1]
+normal.40kb.names <- normal.40kb.names[-1]
 
 #Pheatmaps.
 maximum <- ceiling(max(log2(1 + cancer1.10kb[1:500,2:501]),log2(1 + cancer2.10kb[1:500,2:501]),log2(1 + normal.10kb[1:500,2:501])))
@@ -77,11 +83,11 @@ pheatmap(log2(1 + cancer2.10kb.norm), cluster_rows = F, cluster_cols = F ,labels
 pheatmap(log2(1 + normal.10kb.norm) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white" ,"orange", "red"))(maximum3))
 
 #5.3. Subtract pair of matrices.
-normal.cancer1 <- normal.10kb.norm - cancer1.10kb.norm
-normal.cancer2 <- normal.10kb.norm - cancer2.10kb.norm
-cancer1.cancer2<- cancer1.10kb.norm- cancer2.10kb.norm
-maximum4 <- ceiling(max(1+normal.cancer1,1+normal.cancer2,1+cancer1.cancer2))
-minimum  <- floor(min(1+normal.cancer1,1+normal.cancer2,1+cancer1.cancer2))
+normal.cancer1 <- sign(normal.10kb.norm-cancer1.10kb.norm)*log2(1+abs(normal.10kb.norm - cancer1.10kb.norm))
+normal.cancer2 <- sign(normal.10kb.norm-cancer2.10kb.norm)*log2(1+abs(normal.10kb.norm - cancer2.10kb.norm))
+cancer1.cancer2<- sign(cancer1.10kb.norm-cancer2.10kb.norm)*log2(1+abs(cancer1.10kb.norm- cancer2.10kb.norm))
+maximum4 <- ceiling(max(normal.cancer1,normal.cancer2,cancer1.cancer2))
+minimum  <- floor(min(normal.cancer1,normal.cancer2,cancer1.cancer2))
 pheatmap(normal.cancer1 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
 pheatmap(normal.cancer2 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
 pheatmap(cancer1.cancer2, cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
@@ -119,5 +125,30 @@ directionality_index <- function(x, w = 2e6, r = 4e4){
 cancer1.di<- directionality_index(cancer1.40kb.norm)
 cancer2.di<- directionality_index(cancer2.40kb.norm)
 normal.di <- directionality_index(normal.40kb.norm)
+cancer2.di <- cancer2.di[-180]
+#Pour le geom rect prendre les valeurs entre 127mb et 131mb pour les DI.
 
-ggplot() + geom_rect(data = as.data.frame(cancer1.di), xmin = 1, xmax = 3269, ymin = min(cancer1.di), ymax = max(cancer1.di))
+xmin.cancer1 <- c()
+xmax.cancer1 <- c()
+for (name in strsplit(cancer1.40kb.names,":")){
+  xmin.cancer1 <- c(xmin.cancer1,strtoi(name[2]))
+  xmax.cancer1 <- c(xmax.cancer1,strtoi(name[3]))
+}
+
+xmin.cancer2 <- c()
+xmax.cancer2 <- c()
+for (name in strsplit(cancer2.40kb.names,":")){
+  xmin <- c(xmin,strtoi(name[2]))
+  xmax <- c(xmax,strtoi(name[3]))
+}
+
+xmin.normal <- c()
+xmax.normal <- c()
+for (name in strsplit(normal.40kb.names,":")){
+  xmin.normal <- c(xmin.normal,strtoi(name[2]))
+  xmax.normal <- c(xmax.normal,strtoi(name[3]))
+}
+df <- data.frame(xmin.cancer1 = xmin.cancer1, xmax.cancer1= xmax.cancer1, ymin=0,ymax = cancer1.di)
+ggplot(df[3:403,]) + geom_rect(aes(xmin = xmin.cancer1 ,xmax = xmax.cancer1,ymin = ymin,ymax = ymax))
+ggplot() + geom_rect(xmin = xmin.cancer2 ,xmax = xmax.cancer1,ymin = 0,ymax = cancer1.di)
+ggplot() + geom_rect(xmin = xmin.normal ,xmax = xmax.cancer1,ymin = 0,ymax = cancer1.di)
