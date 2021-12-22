@@ -17,14 +17,14 @@ normal.40kb  = fread("RWPE1_chr12_40kb_hic_matrix.txt")
 
 #Pheatmaps.
 maximum <- ceiling(max(log2(1 + cancer1.10kb[1:500,2:501]),log2(1 + cancer2.10kb[1:500,2:501]),log2(1 + normal.10kb[1:500,2:501])))
-png("Interaction map C42B.png")
-pheatmap(log2(1 + cancer1.10kb[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum), main = "Heatmap for C42B cell (cancer)")
+png("Interaction map C42B (1-500).png")
+pheatmap(log2(1 + cancer1.10kb[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum), main = "Heatmap for C42B cell(cancer, values 1-500)")
 dev.off()
-png("Interaction map 22Rv1.png")
-pheatmap(log2(1 + cancer2.10kb[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum), main = "Heatmap for 22Rv1 cell(cancer)")
+png("Interaction map 22Rv1 (1-500).png")
+pheatmap(log2(1 + cancer2.10kb[1:500,2:501]), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum), main = "Heatmap for 22Rv1 cell(cancer, values 1-500)")
 dev.off()
-png("Interaction map RWPE1.png")
-pheatmap(log2(1 + normal.10kb[1:500,2:501]) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum), main = "Heatmap for RWPE1 cell (normal)")
+png("Interaction map RWPE1 (1-500).png")
+pheatmap(log2(1 + normal.10kb[1:500,2:501]) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum), color = colorRampPalette(c("white", "orange", "red"))(maximum), main = "Heatmap for RWPE1 cell (normal, values 1-500)")
 dev.off()
 #Subset for the regions 127Mb-131Mb.
 x <- which(cancer1.10kb$V1 == "chr12:127000000:127010000")
@@ -35,7 +35,6 @@ cancer1.sub <- cancer1.10kb[x:y,(x+1):(y+1)]
 cancer1.sub.40kb <- cancer1.40kb[w:z,(w+1):(z+1)]
 cancer1.names.40kb <- colnames(cancer1.sub.40kb)
 rm(cancer1.10kb)
-rm(cancer1.40kb)
 
 x <- which(cancer2.10kb$V1 == "chr12:127000000:127010000")
 y <- which(cancer2.10kb$V1 == "chr12:130990000:131000000")
@@ -45,7 +44,6 @@ cancer2.sub <- cancer2.10kb[x:y,(x+1):(y+1)]
 cancer2.sub.40kb <- cancer2.40kb[w:z,(w+1):(z+1)]
 cancer2.names.40kb <- colnames(cancer2.sub.40kb)
 rm(cancer2.10kb)
-rm(cancer2.40kb)
 
 x <- which(normal.10kb$V1 == "chr12:127000000:127010000")
 y <- which(normal.10kb$V1 == "chr12:130990000:131000000")
@@ -91,19 +89,18 @@ dev.off()
 png("Heatmap of a normalized 40kb resolution interaction matrix (RWPE1).png")
 pheatmap(log2(1 + normal.40kb.norm.all[1:500,1:500]) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum2), color = colorRampPalette(c("white", "orange", "red"))(maximum2), main = "Heatmap of a normalized 40kb resolution interaction matrix (RWPE1)")
 dev.off()
-rm(normal.40kb)
 #Bonus.
 
 #5. Data visualization and exploration.
 maximum3 <- ceiling(max(log2(1+cancer1.10kb.norm),log2(1+cancer2.10kb.norm),log2(1+normal.10kb.norm)))
 png("Heatmap of a normalized C42B matrix.png")
-pheatmap(log2(1 + cancer1.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white", "orange", "red"))(maximum3))
+pheatmap(log2(1 + cancer1.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white", "orange", "red"))(maximum3), main ="Heatmap of a normalized C42B matrix (10kb resolution, 127Mb-131Mb)")
 dev.off()
 png("Heatmap of a normalized 22Rv1 matrix.png")
-pheatmap(log2(1 + cancer2.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white", "orange", "red"))(maximum3))
+pheatmap(log2(1 + cancer2.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white", "orange", "red"))(maximum3), main = "Heatmap of a normalized 22Rv1 matrix (10kb resolution, 127Mb-131Mb)")
 dev.off()
 png("Heatmap of a normalized RWPE1 matrix.png")
-pheatmap(log2(1 + normal.10kb.norm) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white" ,"orange", "red"))(maximum3))
+pheatmap(log2(1 + normal.10kb.norm) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum3), color = colorRampPalette(c("white" ,"orange", "red"))(maximum3), main = "Heatmap of a normalized RWPE1 matrix (10kb resolution, 127Mb-131Mb)")
 dev.off()
 #5.3. Subtract pair of matrices.
 normal.cancer1 <- sign(normal.10kb.norm-cancer1.10kb.norm)*log2(1+abs(normal.10kb.norm - cancer1.10kb.norm))
@@ -111,10 +108,17 @@ normal.cancer2 <- sign(normal.10kb.norm-cancer2.10kb.norm)*log2(1+abs(normal.10k
 cancer2.cancer1<- sign(cancer2.10kb.norm-cancer1.10kb.norm)*log2(1+abs(cancer2.10kb.norm- cancer1.10kb.norm))
 maximum4 <- ceiling(max(normal.cancer1,normal.cancer2,cancer2.cancer1))
 minimum  <- floor(min(normal.cancer1,normal.cancer2,cancer2.cancer1))
-pheatmap(normal.cancer1 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
-pheatmap(normal.cancer2 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
-pheatmap(cancer2.cancer1, cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum))
+png("Differences in 3D interactions (RWPE1, C42B).png")
+pheatmap(normal.cancer1 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum), main ="Differences in 3D interactions (RWPE1, C42B) (10kb resolution, 127Mb-131Mb)")
+dev.off()
 
+png("Differences in 3D interactions (RWPE1, 22Rv1).png")
+pheatmap(normal.cancer2 , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum), main ="Differences in 3D interactions (RWPE1, 22Rv1) (10kb resolution, 127Mb-131Mb)")
+dev.off()
+
+png("Differences in 3D interactions (22Rv1, C42B).png")
+pheatmap(cancer2.cancer1, cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(minimum:maximum4), color = colorRampPalette(magma(256))(maximum4-minimum), main ="Differences in 3D interactions (22Rv1, C42B) (10kb resolution, 127Mb-131Mb)")
+dev.off()
 #6. Calling of Topologically Associated Domains (TADs)
 directionality_index <- function(x, w = 2e6, r = 4e4){
   bins.number <- w/r
@@ -187,12 +191,62 @@ for (name in strsplit(normal.names.40kb,":")){
 df.1 <- data.frame(xmin.cancer1 = xmin.cancer1, xmax.cancer1= xmax.cancer1, ymin=0,ymax.1 = cancer1.sub.df, negative = as.factor(sign(cancer1.sub.df)))
 df.2 <- data.frame(xmin.cancer2 = xmin.cancer2, xmax.cancer2= xmax.cancer2, ymin=0,ymax.2 = cancer2.sub.df, negative = as.factor(sign(cancer2.sub.df)))
 df.n <- data.frame(xmin.normal  = xmin.normal , xmax.normal = xmax.normal , ymin=0,ymax.n = normal.sub.df , negative = as.factor(sign(normal.sub.df)))
+
+#TADs go from a few 100kbs to 5Mbs in size
+boundaries <- function(x, threshold = 100000){
+  i = 0; j = 0
+  not.boundary <- c()
+  factors <- as.numeric(levels(x$negative))[x$negative]
+  pos <- c()
+  for(i in 1:nrow(x)){
+    if(i == nrow(x)){break}
+    if((factors[i]*factors[i+1] == -1) & (factors[i] == -1)){
+      pos <- c(pos,i+1)
+    }
+  }
+  for(j in 1:(length(pos)-1)){
+    if(abs(x[pos[j],1] - x[pos[j+1],1]) < threshold){
+      not.boundary <- c(not.boundary, (j+1))
+    }
+  }
+  if(is.null(not.boundary)){return(pos)}
+  else{return(pos[-not.boundary])}
+}
+
+tads.1 <- df.1$xmin.cancer1[boundaries(df.1)]
+tads.2 <- df.2$xmin.cancer2[boundaries(df.2)]
+tads.n <- df.n$xmin.normal[boundaries(df.n)]
+
 png("DI for C42B cell type.png")
-ggplot(df.1) + geom_rect(aes(xmin = xmin.cancer1 ,xmax = xmax.cancer1,ymin = ymin,ymax = ymax.1, col=negative)) + ggtitle("DI for C42B cell type") + xlab("Chromosome position") + ylab("DI") + theme(legend.position = "None")
+ggplot(df.1) + geom_rect(aes(xmin = xmin.cancer1 ,xmax = xmax.cancer1,ymin = ymin,ymax = ymax.1, col=negative)) + ggtitle("Directionality index for C42B cell type") + xlab("Chromosome position") + ylab("DI") + theme(legend.position = "None") + ylim(-2500,1500) + geom_vline(xintercept = tads.1, linetype = "dashed") 
 dev.off()
+
 png("DI for 22Rv1 cell type.png")
-ggplot(df.2) + geom_rect(aes(xmin = xmin.cancer2 ,xmax = xmax.cancer2,ymin = ymin,ymax = ymax.2, col=negative)) + ggtitle("DI for 22Rv1 cell type")+ xlab("Chromosome position") + ylab("DI") + theme(legend.position = "None")
+ggplot(df.2) + geom_rect(aes(xmin = xmin.cancer2 ,xmax = xmax.cancer2,ymin = ymin,ymax = ymax.2, col=negative)) + ggtitle("Directionality index for 22Rv1 cell type")+ xlab("Chromosome position") + ylab("DI") + theme(legend.position = "None") + ylim(-2500,1500) + geom_vline(xintercept = tads.2, linetype = "dashed")
 dev.off()
+
 png("DI for RWPE1 cell type.png")
-ggplot(df.n) + geom_rect(aes(xmin = xmin.normal  ,xmax = xmax.normal ,ymin = ymin,ymax = ymax.n, col=negative)) + ggtitle("DI for RWPE1 cell type")+ xlab("Chromosome position") + ylab("DI") + theme(legend.position = "None")
+ggplot(df.n) + geom_rect(aes(xmin = xmin.normal  ,xmax = xmax.normal ,ymin = ymin,ymax = ymax.n, col=negative)) + ggtitle("Directionality index for RWPE1 cell type")+ xlab("Chromosome position") + ylab("DI") + theme(legend.position = "None") + ylim(-2500,1500) + geom_vline(xintercept = tads.n, linetype = "dashed")
+dev.off()
+
+#Bonus and other plots.
+tad.df.1 <- data.frame(x = c(127000000,tads.1), y = c(1,2,1,2,1,2,1,2,1,2), xend = c(tads.1,131000000), yend = c(1,2,1,2,1,2,1,2,1,2))
+tad.df.2 <- data.frame(x = c(127000000,tads.2), y = c(1,2,1,2,1,2,1,2,1,2), xend = c(tads.2,131000000), yend = c(1,2,1,2,1,2,1,2,1,2))
+tad.df.n <- data.frame(x = c(127000000,tads.n), y = c(1,2,1,2,1,2,1,2), xend = c(tads.n,131000000), yend = c(1,2,1,2,1,2,1,2))
+
+ggplot(tad.df.1) + geom_segment(aes(x=x,y=as.factor(y),xend=xend,yend=yend, size = 3), show.legend = F) + theme(panel.grid = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()) + xlab("Chromosome position")
+ggplot(tad.df.2) + geom_segment(aes(x=x,y=as.factor(y),xend=xend,yend=yend, size = 3), show.legend = F) + theme(panel.grid = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()) + xlab("Chromosome position")
+ggplot(tad.df.n) + geom_segment(aes(x=x,y=as.factor(y),xend=xend,yend=yend, size = 3), show.legend = F) + theme(panel.grid = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()) + xlab("Chromosome position")
+
+maximum5 <- ceiling(max(log2(1+cancer1.10kb.norm),log2(1+cancer2.10kb.norm),log2(1+normal.10kb.norm)))
+png("Interaction map for C42B (127Mb - 131Mb).png")
+pheatmap(log2(1+cancer1.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum5), color = colorRampPalette(c("white","orange","red"))(maximum5), legend = F)
+dev.off()
+
+png("Interaction map for 22Rv1 (127Mb - 131Mb).png")
+pheatmap(log2(1+cancer2.10kb.norm), cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum5), color = colorRampPalette(c("white","orange","red"))(maximum5), legend = F)
+dev.off()
+
+png("Interaction map for RWPE1 (127Mb - 131Mb).png")
+pheatmap(log2(1+normal.10kb.norm) , cluster_rows = F, cluster_cols = F ,labels_row = '', labels_col = '', breaks = c(0:maximum5), color = colorRampPalette(c("white","orange","red"))(maximum5), legend = F)
 dev.off()
